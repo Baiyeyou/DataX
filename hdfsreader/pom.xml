@@ -121,7 +121,6 @@
             <artifactId>hive-hcatalog-core</artifactId>
             <version>${hive.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.alibaba.datax</groupId>
             <artifactId>plugin-unstructured-storage-util</artifactId>
