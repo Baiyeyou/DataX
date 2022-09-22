@@ -7,16 +7,16 @@
 
 HdfsReader提供了读取分布式文件系统数据存储的能力。在底层实现上，HdfsReader获取分布式文件系统上文件的数据，并转换为DataX传输协议传递给Writer。
 
-**目前HdfsReader支持的文件格式有textfile（text）、orcfile（orc）、rcfile（rc）、sequence file（seq）和普通逻辑二维表（csv）类型格式的文件，且文件内容存放的必须是一张逻辑意义上的二维表。**
+**目前HdfsReader支持的文件格式有textfile（text）、orcfile（orc）、rcfile（rc）、sequence file（seq）、parquetfile(parquet)和普通逻辑二维表（csv）类型格式的文件，且文件内容存放的必须是一张逻辑意义上的二维表。**
 
 **HdfsReader需要Jdk1.7及以上版本的支持。**
 
 
 ## 2 功能与限制
 
-HdfsReader实现了从Hadoop分布式文件系统Hdfs中读取文件数据并转为DataX协议的功能。textfile是Hive建表时默认使用的存储格式，数据不做压缩，本质上textfile就是以文本的形式将数据存放在hdfs中，对于DataX而言，HdfsReader实现上类比TxtFileReader，有诸多相似之处。orcfile，它的全名是Optimized Row Columnar file，是对RCFile做了优化。据官方文档介绍，这种文件格式可以提供一种高效的方法来存储Hive数据。HdfsReader利用Hive提供的OrcSerde类，读取解析orcfile文件的数据。目前HdfsReader支持的功能如下：
+HdfsReader实现了从Hadoop分布式文件系统Hdfs中读取文件数据并转为DataX协议的功能。textfile是Hive建表时默认使用的存储格式，数据不做压缩，本质上textfile就是以文本的形式将数据存放在hdfs中，对于DataX而言，HdfsReader实现上类比TxtFileReader，有诸多相似之处。orcfile，它的全名是Optimized Row Columnar file，是对RCFile做了优化。据官方文档介绍，这种文件格式可以提供一种高效的方法来存储Hive数据。HdfsReader利用Hive提供的OrcSerde类，读取解析orcfile文件的数据。parquetfile，列式存储格式，在指定列查询时速度较快。目前HdfsReader支持的功能如下：
 
-1. 支持textfile、orcfile、rcfile、sequence file和csv格式的文件，且要求文件内容存放的是一张逻辑意义上的二维表。
+1. 支持textfile、orcfile、rcfile、sequence file、csv、parquetfile格式的文件，且要求文件内容存放的是一张逻辑意义上的二维表。
 
 2. 支持多种类型数据读取(使用String表示)，支持列裁剪，支持列常量
 
@@ -130,13 +130,15 @@ HdfsReader实现了从Hadoop分布式文件系统Hdfs中读取文件数据并转
 
 * **fileType**
 
-	* 描述：文件的类型，目前只支持用户配置为"text"、"orc"、"rc"、"seq"、"csv"。 <br />
+	* 描述：文件的类型，目前只支持用户配置为"text"、"orc"、"rc"、"seq"、"csv"、"parquet"。 <br />
 
 		text表示textfile文件格式
 
 		orc表示orcfile文件格式
 		
 		rc表示rcfile文件格式
+		
+		parquet表示parquetfile文件格式
 		
 		seq表示sequence file文件格式
 		
