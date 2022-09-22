@@ -51,13 +51,13 @@ public class HdfsWriter extends Writer {
 
         private void validateParameter() {
             this.defaultFS = this.writerSliceConfig.getNecessaryValue(Key.DEFAULT_FS, HdfsWriterErrorCode.REQUIRED_VALUE);
-            //fileType check
+            // 文件类型检查
             this.fileType = this.writerSliceConfig.getNecessaryValue(Key.FILE_TYPE, HdfsWriterErrorCode.REQUIRED_VALUE);
-            if( !fileType.equalsIgnoreCase("ORC") && !fileType.equalsIgnoreCase("TEXT")){
-                String message = "HdfsWriter插件目前只支持ORC和TEXT两种格式的文件,请将filetype选项的值配置为ORC或者TEXT";
+            if( !fileType.equalsIgnoreCase("ORC") && !fileType.equalsIgnoreCase("TEXT")&&!fileType.equalsIgnoreCase("PARQUET")){
+                String message = "HdfsWriter插件目前只支持ORC、TEXT、Parquet三种格式的文件,请将filetype选项的值配置为ORC或者TEXT或者Parquet";
                 throw DataXException.asDataXException(HdfsWriterErrorCode.ILLEGAL_VALUE, message);
             }
-            //path
+            // 文件路径检查
             this.path = this.writerSliceConfig.getNecessaryValue(Key.PATH, HdfsWriterErrorCode.REQUIRED_VALUE);
             if(!path.startsWith("/")){
                 String message = String.format("请检查参数path:[%s],需要配置为绝对路径", path);
@@ -68,9 +68,9 @@ public class HdfsWriter extends Writer {
                 LOG.error(message);
                 throw DataXException.asDataXException(HdfsWriterErrorCode.ILLEGAL_VALUE, message);
             }
-            //fileName
+            // 文件名校验
             this.fileName = this.writerSliceConfig.getNecessaryValue(Key.FILE_NAME, HdfsWriterErrorCode.REQUIRED_VALUE);
-            //columns check
+            // 字段校验
             this.columns = this.writerSliceConfig.getListConfiguration(Key.COLUMN);
             if (null == columns || columns.size() == 0) {
                 throw DataXException.asDataXException(HdfsWriterErrorCode.REQUIRED_VALUE, "您需要指定 columns");
@@ -80,7 +80,7 @@ public class HdfsWriter extends Writer {
                     eachColumnConf.getNecessaryValue(Key.TYPE, HdfsWriterErrorCode.COLUMN_REQUIRED_VALUE);
                 }
             }
-            //writeMode check
+            // 写入模式校验
             this.writeMode = this.writerSliceConfig.getNecessaryValue(Key.WRITE_MODE, HdfsWriterErrorCode.REQUIRED_VALUE);
             writeMode = writeMode.toLowerCase().trim();
             Set<String> supportedWriteModes = Sets.newHashSet("append", "nonconflict", "truncate");
@@ -90,7 +90,7 @@ public class HdfsWriter extends Writer {
                                 writeMode));
             }
             this.writerSliceConfig.set(Key.WRITE_MODE, writeMode);
-            //fieldDelimiter check
+            // 字段分隔符检查
             this.fieldDelimiter = this.writerSliceConfig.getString(Key.FIELD_DELIMITER,null);
             if(null == fieldDelimiter){
                 throw DataXException.asDataXException(HdfsWriterErrorCode.REQUIRED_VALUE,
@@ -100,42 +100,54 @@ public class HdfsWriter extends Writer {
                 throw DataXException.asDataXException(HdfsWriterErrorCode.ILLEGAL_VALUE,
                         String.format("仅仅支持单字符切分, 您配置的切分为 : [%s]", fieldDelimiter));
             }
-            //compress check
+            // 压缩检查
             this.compress  = this.writerSliceConfig.getString(Key.COMPRESS,null);
             if(fileType.equalsIgnoreCase("TEXT")){
+                // TEXT 文件类型压缩方式
                 Set<String> textSupportedCompress = Sets.newHashSet("GZIP", "BZIP2");
                 //用户可能配置的是compress:"",空字符串,需要将compress设置为null
                 if(StringUtils.isBlank(compress) ){
                     this.writerSliceConfig.set(Key.COMPRESS, null);
                 }else {
                     compress = compress.toUpperCase().trim();
-                    if(!textSupportedCompress.contains(compress) ){
+                    if(!textSupportedCompress.contains(compress) ){//判断传递的压缩方式是否符合文件类型
                         throw DataXException.asDataXException(HdfsWriterErrorCode.ILLEGAL_VALUE,
-                                String.format("目前TEXT FILE仅支持GZIP、BZIP2 两种压缩, 不支持您配置的 compress 模式 : [%s]",
-                                        compress));
+                                String.format("目前TEXT FILE仅支持GZIP、BZIP2 两种压缩, 不支持您配置的 compress 模式 : [%s]", compress));
                     }
                 }
             }else if(fileType.equalsIgnoreCase("ORC")){
+                // ORC 文件类型压缩方式
                 Set<String> orcSupportedCompress = Sets.newHashSet("NONE", "SNAPPY");
                 if(null == compress){
                     this.writerSliceConfig.set(Key.COMPRESS, "NONE");
                 }else {
                     compress = compress.toUpperCase().trim();
-                    if(!orcSupportedCompress.contains(compress)){
+                    if(!orcSupportedCompress.contains(compress)){//判断传递的压缩方式是否符合文件类型
                         throw DataXException.asDataXException(HdfsWriterErrorCode.ILLEGAL_VALUE,
-                                String.format("目前ORC FILE仅支持SNAPPY压缩, 不支持您配置的 compress 模式 : [%s]",
-                                        compress));
+                                String.format("目前ORC FILE仅支持SNAPPY压缩, 不支持您配置的 compress 模式 : [%s]", compress));
                     }
                 }
-
+            }else if(fileType.equalsIgnoreCase("PARQUET")){
+                // PATQUET 文件类型压缩方式
+                Set<String> parquetSupportedCompress = Sets.newHashSet("NONE", "SNAPPY");
+                if(null == compress){
+                    this.writerSliceConfig.set(Key.COMPRESS, "NONE");
+                }else {
+                    compress = compress.toUpperCase().trim();
+                    if(!parquetSupportedCompress.contains(compress)){//判断传递的压缩方式是否符合文件类型
+                        throw DataXException.asDataXException(HdfsWriterErrorCode.ILLEGAL_VALUE,
+                                String.format("目前SNAPPY FILE仅支持SNAPPY压缩, 不支持您配置的 compress 模式 : [%s]", compress));
+                    }
+                }
             }
-            //Kerberos check
+
+            // Kerveros认证检查
             Boolean haveKerberos = this.writerSliceConfig.getBool(Key.HAVE_KERBEROS, false);
             if(haveKerberos) {
                 this.writerSliceConfig.getNecessaryValue(Key.KERBEROS_KEYTAB_FILE_PATH, HdfsWriterErrorCode.REQUIRED_VALUE);
                 this.writerSliceConfig.getNecessaryValue(Key.KERBEROS_PRINCIPAL, HdfsWriterErrorCode.REQUIRED_VALUE);
             }
-            // encoding check
+            // 编码检查
             this.encoding = this.writerSliceConfig.getString(Key.ENCODING,Constant.DEFAULT_ENCODING);
             try {
                 encoding = encoding.trim();
@@ -325,6 +337,7 @@ public class HdfsWriter extends Writer {
             }
             return tmpFilePath;
         }
+
         public void unitizeParquetConfig(Configuration writerSliceConfig) {
             String parquetSchema = writerSliceConfig.getString(Key.PARQUET_SCHEMA);
             if (StringUtils.isNotBlank(parquetSchema)) {
@@ -372,8 +385,6 @@ public class HdfsWriter extends Writer {
 
     }
 
-
-
     public static class Task extends Writer.Task {
         private static final Logger LOG = LoggerFactory.getLogger(Task.class);
 
@@ -415,8 +426,11 @@ public class HdfsWriter extends Writer {
                 //写ORC FILE
                 hdfsHelper.orcFileStartWrite(lineReceiver,this.writerSliceConfig, this.fileName,
                         this.getTaskPluginCollector());
+            }else if(fileType.equalsIgnoreCase("PARQUET")){
+                //写PARQUET FILE
+                hdfsHelper.parquetFileStartWrite(lineReceiver,this.writerSliceConfig, this.fileName,
+                        this.getTaskPluginCollector());
             }
-
             LOG.info("end do write");
         }
 
