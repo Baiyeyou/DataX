@@ -5,12 +5,12 @@
 
 ## 1 快速介绍
 
-HdfsWriter提供向HDFS文件系统指定路径中写入TEXTFile文件和ORCFile文件,文件内容可与hive中表关联。
+HdfsWriter提供向HDFS文件系统指定路径中写入TEXTFile文件、ORCFile文件、PARQUETFile文件,文件内容可与hive中表关联。
 
 
 ## 2 功能与限制
 
-* (1)、目前HdfsWriter仅支持textfile和orcfile两种格式的文件，且文件内容存放的必须是一张逻辑意义上的二维表;
+* (1)、目前HdfsWriter仅支持textfile、orcfile、parquetfile的文件，且文件内容存放的必须是一张逻辑意义上的二维表;
 * (2)、由于HDFS是文件系统，不存在schema的概念，因此不支持对部分列写入;
 * (3)、目前仅支持与以下Hive数据类型：
 数值型：TINYINT,SMALLINT,INT,BIGINT,FLOAT,DOUBLE
@@ -178,11 +178,13 @@ HdfsWriter提供向HDFS文件系统指定路径中写入TEXTFile文件和ORCFile
 
 * **fileType**
 
-	* 描述：文件的类型，目前只支持用户配置为"text"或"orc"。 <br />
+	* 描述：文件的类型，目前只支持用户配置为"text"或"orc"或"parquet"。 <br />
 
 		text表示textfile文件格式
 
 		orc表示orcfile文件格式
+		
+		parquet表示parquetfile文件格式
 
 	* 必选：是 <br />
 
@@ -246,7 +248,7 @@ HdfsWriter提供向HDFS文件系统指定路径中写入TEXTFile文件和ORCFile
 
 * **compress**
 
-	* 描述：hdfs文件压缩类型，默认不填写意味着没有压缩。其中：text类型文件支持压缩类型有gzip、bzip2;orc类型文件支持的压缩类型有NONE、SNAPPY（需要用户安装SnappyCodec）。 <br />
+	* 描述：hdfs文件压缩类型，默认不填写意味着没有压缩。其中：text类型文件支持压缩类型有gzip、bzip2;orc类型文件支持的压缩类型有NONE、SNAPPY（需要用户安装SnappyCodec）,parquet类型文件支持的压缩类型有NONE、SNAPPY（需要用户安装SnappyCodec）。 <br />
 
 	* 必选：否 <br />
 
