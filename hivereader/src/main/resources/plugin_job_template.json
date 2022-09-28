@@ -1,0 +1,27 @@
+{
+  "name": "hivereader",
+  "parameter": {
+    "defaultFS": "hdfs://:",
+    "hiveJdbcUrl": "jdbc:hive2://",
+    "username": "",
+    "password":"",
+    "tempDatabase":"",
+    "tempDatabasePath": "",
+    "hive_sql_set": "",
+    "fieldDelimiter":"",
+    "nullFormat": "",
+    "hiveSql": [
+      "select id,username,password from default.t_user;"
+    ],
+    "haveKerberos": true,
+    "kerberosPrincipal": "hive@DYKJ.COM",
+    "kerberosKeytabFilePath": "/data/dolphinscheduler/keytabs/hive.keytab",
+    "hadoopConfig": {
+      "dfs.nameservices": "nameservice1",
+      "dfs.ha.namenodes.nameservice1": "namenode176,namenode224",
+      "dfs.namenode.rpc-address.nameservice1.namenode176": "cdh001:8020",
+      "dfs.namenode.rpc-address.nameservice1.namenode224": "cdh002:8020",
+      "dfs.client.failover.proxy.provider.nameservice1": "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
+    }
+  }
+}
