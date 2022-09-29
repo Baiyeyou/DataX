@@ -1,0 +1,28 @@
+{
+  "name": "hivewriter",
+  "parameter": {
+    "print":true,
+    "username": "hive",
+    "defaultFS": "hdfs://",
+    "hiveJdbcUrl": "jdbc:hive2://",
+    "databaseName": "default",
+    "tableName": "t_user",
+    "writeMode": "insert",
+    "tmpDatabase":"tmp",
+    "tmpDatabasePath":"/user/hive/warehouse/tmp.db/",
+    "column": [
+      {
+        "name": "id",
+        "type": "INT"
+      },
+      {
+        "name": "username",
+        "type": "STRING"
+      },
+      {
+        "name": "password",
+        "type": "STRING"
+      }
+    ]
+  }
+}
