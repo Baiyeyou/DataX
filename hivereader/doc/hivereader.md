@@ -8,13 +8,10 @@
 HiveReader提供了基于SQL进行数据获取的能力。在底层实现上，HiveReader获取HIVE数据仓库上的原始表数据，并新建一个临时表，存储读取的数据，格式为TEXTFILE，然后通过HDFS文件系统读取其数据存储目录，进行数据获取，并转换为DataX传输协议传递给Writer。
 
 
-
 ## 2 功能
 
-
 1. 支持Hive JDBC的方式进行数据读取。
-1. 支持以SQL的方式对HIVE数据进行筛选。
-
+2. 支持以SQL的方式对HIVE数据进行筛选。
 
 ## 3 功能说明
 
@@ -69,14 +66,11 @@ HiveReader提供了基于SQL进行数据获取的能力。在底层实现上，H
 
 	* 描述：Hadoop hdfs文件系统namenode节点地址。 <br />
 
-
 		**目前HdfsReader已经支持Kerberos认证，如果需要权限认证，则需要用户配置kerberos参数，见下面**
-
 
 	* 必选：是 <br />
 
 	* 默认值：无 <br />
-
 
 
 * **fieldDelimiter**
@@ -90,7 +84,6 @@ HiveReader提供了基于SQL进行数据获取的能力。在底层实现上，H
 	* 默认值：\u0001 <br />
 
 
-
 * **nullFormat**
 
 	* 描述：文本文件中无法使用标准字符串定义null(空指针)，DataX提供nullFormat定义哪些字符串可以表示为null。<br />
@@ -100,6 +93,23 @@ HiveReader提供了基于SQL进行数据获取的能力。在底层实现上，H
  	* 必选：否 <br />
 
  	* 默认值：\N <br />
+ 
+ * **hiveJdbcUrl**
+
+	* 描述：连接Hive的JDBC URL，如果有kerberos认证则需要带上认证用户，例如"jdbc:hive2://hostname:port/database;principale=hive/hostname@DYKJ.COM"<br />
+
+ 	* 必选：是 <br />
+
+ 	* 默认值：无 <br />
+
+* **hiveSql**
+
+	* 描述：指定的hql语句。
+
+ 	* 必选：是 <br />
+
+ 	* 默认值：无 <br />
+
 
 * **haveKerberos**
 
