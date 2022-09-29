@@ -1,0 +1,6 @@
+{
+  "name": "hivewriter",
+  "class": "com.alibaba.datax.plugin.writer.hivewriter.HiveWriter",
+  "description": "",
+  "developer": "alibaba"
+}
